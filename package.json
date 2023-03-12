@@ -24,6 +24,7 @@
     "hardhat-deploy": "^0.11.24"
   },
   "dependencies": {
+    "@chainlink/contracts": "^0.6.1",
     "@openzeppelin/contracts": "^4.8.2"
   }
 }

@@ -35,7 +35,6 @@ contract Staking is AccessControl, Pausable {
     mapping(address => uint256) userRewardPoolTwo;
     mapping(address => uint256) userRewardPoolThree;
 
-
     //events
     event Stake(address indexed account, uint256 amount);
     event Withdraw(address indexed account, uint256 amount);
@@ -44,30 +43,6 @@ contract Staking is AccessControl, Pausable {
     //construtor
     constructor(uint256 amount) {
         i_amount = amount;
-    }
-
-    function getUserBalance(address _user) public view returns(uint256){
-        return balanceOfUser[msg.sender];
-    }
-    
-    function getStakingStatus(address _user) public view returns(bool){
-        return stakingStatus[msg.sender];
-    }
-
-    function getUserStakeTime(address _user) public view returns(uint256){
-        return timePeriod[msg.sender];
-    }
-
-    function getUserPoolOneReward(address _user) public view returns(uint256){
-        return userRewardPoolOne[msg.sender];
-    }
-
-    function getUserPoolTwoReward(address _user) public view returns(uint256){
-        return userRewardPoolTwo[msg.sender];
-    }
-    
-    function getUserPoolThreeReward(address _user) public view returns(uint256){
-        return userRewardPoolThree[msg.sender];
     }
 
     function stake(address _user, uint256 _amount) public payable {
@@ -186,4 +161,29 @@ contract Staking is AccessControl, Pausable {
 
         return rewardPerUserPoolThree;
     }
+
+    function getUserBalance(address _user) public view returns(uint256){
+        return balanceOfUser[msg.sender];
+    }
+    
+    function getStakingStatus(address _user) public view returns(bool){
+        return stakingStatus[msg.sender];
+    }
+
+    function getUserStakeTime(address _user) public view returns(uint256){
+        return timePeriod[msg.sender];
+    }
+
+    function getUserPoolOneReward(address _user) public view returns(uint256){
+        return userRewardPoolOne[msg.sender];
+    }
+
+    function getUserPoolTwoReward(address _user) public view returns(uint256){
+        return userRewardPoolTwo[msg.sender];
+    }
+    
+    function getUserPoolThreeReward(address _user) public view returns(uint256){
+        return userRewardPoolThree[msg.sender];
+    }
+
 }
