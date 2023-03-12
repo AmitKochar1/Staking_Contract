@@ -22,7 +22,7 @@ contract Staking is AccessControl, Pausable {
     // variable constant
     uint256 private constant firstPoolTime = 5 days;
     uint256 private constant secondPoolTime = 10 days;
-    uint256 private constant threePoolTime = 15 days;
+    uint256 private constant thirdPoolTime = 15 days;
     uint256 private constant poolOnePercentage = 10;
     uint256 private constant poolTwoPercentage = 20;
     uint256 private constant poolThreePercentage = 30;
@@ -31,6 +31,10 @@ contract Staking is AccessControl, Pausable {
     mapping(address => uint256) balanceOfUser;
     mapping(address => bool) stakingStatus;
     mapping(address => uint256) timePeriod;
+    mapping(address => uint256) userRewardPoolOne;
+    mapping(address => uint256) userRewardPoolTwo;
+    mapping(address => uint256) userRewardPoolThree;
+
 
     //events
     event Stake(address indexed account, uint256 amount);
@@ -40,6 +44,30 @@ contract Staking is AccessControl, Pausable {
     //construtor
     constructor(uint256 amount) {
         i_amount = amount;
+    }
+
+    function getUserBalance(address _user) public view returns(uint256){
+        return balanceOfUser[msg.sender];
+    }
+    
+    function getStakingStatus(address _user) public view returns(bool){
+        return stakingStatus[msg.sender];
+    }
+
+    function getUserStakeTime(address _user) public view returns(uint256){
+        return timePeriod[msg.sender];
+    }
+
+    function getUserPoolOneReward(address _user) public view returns(uint256){
+        return userRewardPoolOne[msg.sender];
+    }
+
+    function getUserPoolTwoReward(address _user) public view returns(uint256){
+        return userRewardPoolTwo[msg.sender];
+    }
+    
+    function getUserPoolThreeReward(address _user) public view returns(uint256){
+        return userRewardPoolThree[msg.sender];
     }
 
     function stake(address _user, uint256 _amount) public payable {
@@ -98,7 +126,7 @@ contract Staking is AccessControl, Pausable {
         emit WithdrewAllFunds(msg.sender, _amount);
     }
 
-    function poolOneReward() internal view returns (uint256 rewardPerUser) {
+    function poolOneReward() internal returns (uint256 rewardPerUserPoolOne) {
         if (!stakingStatus[msg.sender]) {
             revert Staking_UserNotStaking();
         }
@@ -111,19 +139,51 @@ contract Staking is AccessControl, Pausable {
         uint256 _userShare = balanceOfUser[msg.sender];
         uint256 _userReward = _userShare / _totalDeposit;
 
-        rewardPerUser = _userReward * _poolOneReward;
+        rewardPerUserPoolOne = _userReward * _poolOneReward;
+        userRewardPoolOne[msg.sender] = rewardPerUserPoolOne;
 
-        return rewardPerUser;
+        return rewardPerUserPoolOne;
     }
 
-    function poolTwoReward() internal {
+    function poolTwoReward() internal returns (uint256 rewardPerUserPoolTwo ){
         if (!stakingStatus[msg.sender]) {
             revert Staking_UserNotStaking();
         }
-        if (timePeriod[msg.sender] < firstPoolTime) {
+        if (timePeriod[msg.sender] < secondPoolTime) {
             revert Staking_NotStakedLongEnough();
         }
+
+        uint256 _totalDeposit = totalDeposit;
+        uint256 _poolTwoReward = (_totalDeposit * poolTwoPercentage) / 100;
+
+        uint256 _userShare = balanceOfUser[msg.sender];
+        uint256 _userReward = _userShare / _totalDeposit;
+
+        rewardPerUserPoolTwo = _userReward * _poolTwoReward;
+        userRewardPoolTwo[msg.sender] = rewardPerUserPoolTwo;
+
+        return rewardPerUserPoolTwo;
+
     }
 
-    function poolThreeReward() internal {}
+
+    function poolThreeReward() internal view (uint256 rewardPerUserPoolThree ){
+        if (!stakingStatus[msg.sender]) {
+            revert Staking_UserNotStaking();
+        }
+        if (timePeriod[msg.sender] < thirdPoolTime) {
+            revert Staking_NotStakedLongEnough();
+        }
+
+        uint256 _totalDeposit = totalDeposit;
+        uint256 _poolThreeReward = (_totalDeposit * poolThreePercentage) / 100;
+
+        uint256 _userShare = balanceOfUser[msg.sender];
+        uint256 _userReward = _userShare / _totalDeposit;
+
+        rewardPerUserPoolThree = _userReward * _poolThreeReward;
+        userRewardPoolThree[msg.sender] = rewardPerUserPoolThree;
+
+        return rewardPerUserPoolThree;
+    }
 }
